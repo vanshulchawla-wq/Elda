@@ -5,7 +5,7 @@ import math
 # --- CONFIG ---
 st.set_page_config(page_title="Elda | Customer Directory", page_icon="📋", layout="wide")
 
-MONGO_URI = "mongodb+srv://elda:eldaonboard.streamlit.app@elda.wzcx5kq.mongodb.net/?appName=Elda"
+MONGO_URI = st.secrets["MONGO_URI"]
 PAGE_SIZE = 50
 
 @st.cache_resource
