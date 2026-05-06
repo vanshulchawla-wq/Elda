@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from pymongo import MongoClient
 
 # --- MONGO CONNECTION ---
-MONGO_URI = "mongodb+srv://elda:eldaonboard.streamlit.app@elda.wzcx5kq.mongodb.net/?appName=Elda"
+MONGO_URI = st.secrets["MONGO_URI"]
 
 @st.cache_resource
 def get_mongo_collection():
