@@ -51,17 +51,12 @@ if st.session_state.selected_customer:
     with col2:
         st.subheader("✨ Social")
         social = customer.get("social", {})
-        if social:
-            activities = []
-            if social.get("temple"): activities.append("Temple")
-            if social.get("kitty_party"): activities.append("Kitty Party")
-            if social.get("kirtan"): activities.append("Kirtan/Satsang")
-            if social.get("parlour"): activities.append("Parlour/Grooming")
-            st.write(f"**Activities:** {', '.join(activities) if activities else 'None selected'}")
-            if social.get("custom_type"):
-                st.write(f"**Custom:** {social['custom_type']} ({social.get('custom_freq', '')})")
-            if social.get("custom_prefs"):
-                st.write(f"**Preferences:** {social['custom_prefs']}")
+        activities = social.get("activities", []) if social else []
+        if activities:
+            for act in activities:
+                st.write(f"**{act.get('name', '')}** — {act.get('frequency', '')}")
+                if act.get("description"):
+                    st.caption(act["description"])
         else:
             st.info("No social data saved.")
 
