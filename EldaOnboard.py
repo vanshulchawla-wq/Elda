@@ -157,34 +157,35 @@ else:
 
     # --- TAB 3: SOCIAL ---
     with tabs[2]:
-        st.markdown('<div class="section-header">Social & Spiritual</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">Social & Spiritual Activities</div>', unsafe_allow_html=True)
         
-        with st.container(border=True):
-            st.subheader("Templates")
-            st.checkbox("Temple (Weekly Thursday)", key="chk_temple")
-            st.checkbox("Kitty Party (Monthly)", key="chk_kitty")
-            st.checkbox("Kirtan / Satsang", key="chk_kirtan")
-            st.checkbox("Parlour / Grooming (Every 30 Days)", key="chk_parlour")
-        
-        with st.container(border=True):
-            st.subheader("Custom Activity")
-            st.text_input("Type", placeholder="e.g. Physiotherapy", key="custom_type")
-            st.text_input("Frequency", placeholder="e.g. Every Monday", key="custom_freq")
-            st.text_area("Specific Preferences", placeholder="e.g. Prefers driver Ramesh", key="custom_prefs")
+        if "social_activities" not in st.session_state:
+            st.session_state.social_activities = 1
+
+        for i in range(st.session_state.social_activities):
+            with st.container(border=True):
+                st.text_input("Activity Name", placeholder="e.g. Temple, Walk, Kitty Party", key=f"social_name_{i}")
+                st.text_input("Frequency", placeholder="e.g. Every Thursday, Daily at 8am", key=f"social_freq_{i}")
+                st.text_area("Description", placeholder="e.g. Prefers driver Ramesh, goes with Mrs. Sharma", key=f"social_desc_{i}")
+
+        if st.button("➕ Add Another Activity", key="add_social"):
+            st.session_state.social_activities += 1
+            st.rerun()
 
         if st.button("💾 Save Social Data", key="save_social"):
             collection = get_mongo_collection()
+            activities = []
+            for i in range(st.session_state.social_activities):
+                name = st.session_state.get(f"social_name_{i}", "")
+                if name:
+                    activities.append({
+                        "name": name,
+                        "frequency": st.session_state.get(f"social_freq_{i}", ""),
+                        "description": st.session_state.get(f"social_desc_{i}", "")
+                    })
             collection.update_one(
                 {"name": st.session_state.p_name},
-                {"$set": {"social": {
-                    "temple": st.session_state.get("chk_temple", False),
-                    "kitty_party": st.session_state.get("chk_kitty", False),
-                    "kirtan": st.session_state.get("chk_kirtan", False),
-                    "parlour": st.session_state.get("chk_parlour", False),
-                    "custom_type": st.session_state.get("custom_type", ""),
-                    "custom_freq": st.session_state.get("custom_freq", ""),
-                    "custom_prefs": st.session_state.get("custom_prefs", "")
-                }}},
+                {"$set": {"social": {"activities": activities}}},
                 upsert=True
             )
             st.success("Social data saved!")
